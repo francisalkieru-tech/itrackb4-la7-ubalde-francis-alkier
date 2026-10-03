@@ -3,11 +3,10 @@
 @section('title', 'Store Product List')
 
 @section('content')
-<h3>My Product List</h3>
-<p>Prepared by: Francis Alkier Ubalde</p>
-
 <div class="card mb-3">
+    
     <div class="card-body py-3">
+        <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Add New Product</a>
         @if (!$category && !$stock)
             <span class="badge bg-light text-dark border">Showing all products</span>
             @else

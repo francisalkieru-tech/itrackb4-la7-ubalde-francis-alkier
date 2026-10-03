@@ -22,7 +22,7 @@ class ProductController extends Controller
             });
         }
 
-        if($stock){
+        if($stock && $stock !== 'all'){
             $products = array_filter($products, function ($product) use($stock){
                 return $stock === 'low' ? $product['stock'] < 10 : $product['stock'] >= 10;
             });
@@ -42,7 +42,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
@@ -50,7 +50,28 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|max:100',
+            'price' => 'required|numeric|min:1|max:1000',
+            'stock' => 'required|numeric|max:100',
+            'category' => 'required|in:Canned Goods,Instant Noodles,Beverages,Alcoholic Beverages,Snacks'
+        ]);
+        $products = $this->products();
+        $id = max(array_keys($products)) + 1;
+
+        $products[$id] = [
+            'id' => $id,
+            'name' => $request->input('name'),
+            'price' => (int) $request->input('price'),
+            'stock' => (int) $request->input('stock'),
+            'category' => $request->input('category'),
+        ];
+
+        $this->saveProducts($products);
+
+        return redirect()
+        ->route('products.index')
+        ->with('success', 'Product added successfully!');
     }
 
     /**
@@ -91,14 +112,15 @@ class ProductController extends Controller
 
     private function products()
     {
-        return [
-            1 => ['id'=> 1,'name' => 'Argentina 150g', 'price' => 36, 'stock' => 40, 'category' => 'Canned Goods'],
-            2 => ['id'=> 2,'name' => 'Megasardines', 'price' => 20, 'stock' => 5, 'category' => 'Canned Goods'],
-            3 => ['id'=> 3,'name' => 'Pancit Canton', 'price' => 18, 'stock' => 35, 'category' => 'Instant Noodles'],
-            4 => ['id'=> 4,'name' => '1.5 coke', 'price' => 75, 'stock' => 8, 'category' => 'Beverages'],
-            5 => ['id'=> 5,'name' => 'Red Horse 500ml', 'price' => 52, 'stock' => 10, 'category' => 'Alcoholic Beverages'],
-            6 => ['id'=> 6,'name' => 'Piattos Cheese 85g', 'price' => 18, 'stock' => 8, 'category' => 'Snacks'],
-        ];
-    }
+        $path = storage_path('app/products.json');
 
+        return json_decode(file_get_contents($path), true);
+    }
+    private function saveProducts(array $products){
+        file_put_contents(
+            storage_path('app/products.json'),
+            json_encode($products, JSON_PRETTY_PRINT)
+        );
+    }
 }
+

@@ -1,11 +1,8 @@
-Q1. You added a second filter without adding a single route. Explain why no new route was needed. Your answer should say something about what the router actually looks at.
-Answer: no new route needed becuase both filter use the same data path, the mainly router looks at the url path when macthing a route, while the category and stock value after array query parameters handled by the controller.
+Q1. Your form sends data with POST rather than GET. Explain what would go wrong if it used GET instead. Your answer should say something about what a browser does when a page is refreshed.
+Answer: if the form is use GET, all the input data would be appended to the URL as a query string. Refreshing a page simply re-requests the same URL, and the browser does this silently for GET requests since it considers them harmless. That means every refresh would resubmit the exact same data and create a duplicate record.
 
-Q2. Suppose you had built both filters as route parameters instead. Describe what the URL for 'year 4 only, no course filter' would have to look like, and why.
-Answer: if the both filters were route parameter the url have 4 only and no course filter so it could be something like student/all/4 which all means that no course filter is selected, while 4 means year 4. it needs to be there beacuse route parameters are part of the URL path.
+Q2. When validation fails, your controller does not run the code that saves the record — and you did not write an if statement to stop it. Explain what actually stops it, and where the visitor ends up.
+Answer: the validation call itself stops execution. When a rule fails it throws a validationexception internally, and since I never catch that exception, the rest of the method save and redirect lines simply never runs. 
 
-Q3.Your navigation link stays marked on a detail page and also when a filter is applied. Only one of those two needed a change to your pattern. Say which one, and why the other needed nothing.
-Answer: the detail page needed the change because the URL becomes something like /products/1, so I used products* to also match the longer path. The filter did not need another change because the filter is in the query string, and request only checks the path.
-
-Q4. You deleted your old filter method but kept the empty store and update methods, even though none of the three can be reached by a URL. Explain the difference between them.
-Answer: I deleted the old filter method because the filtering is now handled by the index method, so the old method is no longer needed. The empty store and update methods are different because they are Laravel resource methods that can still be used later if I add product creation and updating.
+Q3. Your success message is displayed from the layout, which renders on every page. Explain why it does not appear on every page.
+Answer: the check lives in the layout, but the data it checks the session('success') this is only set right after a successful save and using ->with('success', 'Product added successfully!') the session flash data like this is only available for the very next request.

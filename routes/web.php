@@ -15,4 +15,6 @@ Route::get('/products/filter/{category?}', function ($category = null) {
     return redirect()->route('products.index', $category ? ['category' => $category] : []);
 });
 
-Route::resource('products', ProductController::class) -> only('index', 'show');
+Route::resource('products', ProductController::class) -> only('index', 'show', 'create', 'store');
+
+
